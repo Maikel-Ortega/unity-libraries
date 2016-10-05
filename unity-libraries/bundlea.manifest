@@ -1,0 +1,18 @@
+ManifestFileVersion: 0
+CRC: 2953992465
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 6d48ae670ca1fbc9cf30b1a7f07f679d
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 286cb80456c9d2b288573209971b5abf
+HashAppended: 0
+ClassTypes:
+- Class: 114
+  Script: {fileID: 11500000, guid: a19c8bd3ce564874c97f70aaf4a68570, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+Assets:
+- Assets/BundleObjectB.asset
+Dependencies: []
