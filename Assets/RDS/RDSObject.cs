@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-//TODO: Descomentar rdsTable cuando este implementado
 
 public class RDSObject : IRDSObject 
 {
@@ -9,7 +8,6 @@ public class RDSObject : IRDSObject
     private bool mUnique;
     private bool mAlways;
     private bool mEnabled;
-
     #region constructors
 
     public RDSObject():this(0)
@@ -28,7 +26,7 @@ public class RDSObject : IRDSObject
         rdsUnique = _unique;
         rdsAlways = _always;
         rdsEnabled = _enabled;
-        //rdsTable = null;
+        rdsTable = null;
     }
 
     #endregion
@@ -140,8 +138,8 @@ public class RDSObject : IRDSObject
             throw new System.NotImplementedException();
         }
     }
-
-    //public RDSTable rdsTable { get; set; }
+        
+    public RDSTable rdsTable { get; set;}
 
     #endregion
 

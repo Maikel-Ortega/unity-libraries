@@ -33,4 +33,7 @@ public interface IRDSObject
     void RDSPreResultEvaluation();
     void RDSHit();
     void RDSPostResultEvaluation();
+
+    string ToString(int indentationLevel);
+
 }

@@ -6,5 +6,5 @@ public interface IRDSTable : IRDSObject
 {
     int rdsCount                        { get; set; }
     IEnumerable<IRDSObject> rdsContents { get; }
-    IEnumerable<IRDSObject> rdsResult   { get; }
+    IEnumerable<IRDSObject> GetRdsResult();
 }

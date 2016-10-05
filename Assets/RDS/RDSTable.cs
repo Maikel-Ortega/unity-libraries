@@ -78,72 +78,13 @@ public class RDSTable : IRDSTable
 
     private List<IRDSObject> mContents = null;
 
-    /// <summary>
-    /// Gets or sets the rds weight.
-    /// </summary>
-    /// <value>The rds weight.</value>
-    public double rdsWeight
-    {
-        get
-        {
-            throw new System.NotImplementedException();
-        }
-        set
-        {
-            throw new System.NotImplementedException();
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether this <see cref="RDSTable"/> rds unique.
-    /// </summary>
-    /// <value><c>true</c> if rds unique; otherwise, <c>false</c>.</value>
-    public bool rdsUnique
-    {
-        get
-        {
-            throw new System.NotImplementedException();
-        }
-        set
-        {
-            throw new System.NotImplementedException();
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether this <see cref="RDSTable"/> rds always.
-    /// </summary>
-    /// <value><c>true</c> if rds always; otherwise, <c>false</c>.</value>
-    public bool rdsAlways
-    {
-        get
-        {
-            throw new System.NotImplementedException();
-        }
-        set
-        {
-            throw new System.NotImplementedException();
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether this <see cref="RDSTable"/> rds enabled.
-    /// </summary>
-    /// <value><c>true</c> if rds enabled; otherwise, <c>false</c>.</value>
-    public bool rdsEnabled
-    {
-        get
-        {
-            throw new System.NotImplementedException();
-        }
-        set
-        {
-            throw new System.NotImplementedException();
-        }
-    }
+    public double rdsWeight{ get; set;}
+    public bool rdsUnique{ get; set;}
+    public bool rdsAlways{ get; set;}
+    public bool rdsEnabled{ get; set;}
+    public RDSTable rdsTable { get; set;}
 
     public int rdsCount  { get; set;}
-
     public System.Collections.Generic.IEnumerable<IRDSObject> rdsContents 
     {  
         get{ return mContents; } 
@@ -233,7 +174,12 @@ public class RDSTable : IRDSTable
 
     private List<IRDSObject> uniqueDrops = new List<IRDSObject>();
 
-    private void AddResult(List<IRDSObject> resultList, IRDSObject newObj)
+    /// <summary>
+    /// Adds to result.
+    /// </summary>
+    /// <param name="resultList">Result list.</param>
+    /// <param name="newObj">New object.</param>
+    private void AddToResult(List<IRDSObject> resultList, IRDSObject newObj)
     {
         if (!newObj.rdsUnique || !uniqueDrops.Contains(newObj))
         {
@@ -246,7 +192,7 @@ public class RDSTable : IRDSTable
             {
                 if( newObj is IRDSTable)
                 {
-                    resultList.AddRange( ((IRDSTable)newObj).rdsResult );
+                    resultList.AddRange( ((IRDSTable)newObj).GetRdsResult() );
                 }
                 else
                 {
@@ -270,15 +216,110 @@ public class RDSTable : IRDSTable
     /// Gets the rds result.
     /// </summary>
     /// <value>The rds result.</value>
-    public virtual System.Collections.Generic.IEnumerable<IRDSObject> rdsResult
+    public virtual System.Collections.Generic.IEnumerable<IRDSObject> GetRdsResult()
     {
-        get
+        
+        List<IRDSObject> r = new List<IRDSObject>();
+        uniqueDrops = new List<IRDSObject>();
+
+        // We call this event just before we add each object to result
+        // In this moment they can disable themselves, or change their weight
+        foreach(IRDSObject o in mContents)
         {
-            throw new System.NotImplementedException();
+            o.RDSPreResultEvaluation();
         }
+
+        //Now we add all objects that are set as Always
+        //Count will be ignored for this objects!
+        foreach(IRDSObject o in mContents.Where( e=> e.rdsAlways && e.rdsEnabled))
+        {
+            AddToResult(r, o);
+        }
+
+        int alwaysCount = mContents.Count(e=> e.rdsAlways && e.rdsEnabled);
+        int realDropCount = rdsCount - alwaysCount;
+
+        //We only continue if we didnt fill our count with always-type of items
+        if(realDropCount > 0)
+        {
+            for(int dropCount = 0; dropCount < realDropCount; dropCount++)
+            {
+                IEnumerable<IRDSObject> dropables = mContents.Where(e => e.rdsEnabled && ! e.rdsAlways);
+
+                double hitvalue = RDSRandom.GetDoubleValue(dropables.Sum(e => e.rdsWeight));
+
+                double curValue = 0;
+                foreach (IRDSObject o in dropables)
+                {
+                    curValue += o.rdsWeight;
+                    if( hitvalue < curValue )
+                    {
+                        //This is the one that got chosen!
+                        AddToResult(r, o);
+                        break;
+                    }
+                }
+            }
+        }
+
+        foreach( IRDSObject o in r)
+        {
+            o.RDSPostResultEvaluation();
+        }
+
+        return r;
     }
 
-   
+    #endregion
 
+    #region TOSTRING
+    /// <summary>
+    /// Returns a <see cref="System.String"/> that represents this instance.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="System.String"/> that represents this instance.
+    /// </returns>
+    public override string ToString()
+    {
+        return ToString(0);
+    }
+
+    /// <summary>
+    /// Returns a <see cref="System.String"/> that represents this instance.
+    /// </summary>
+    /// <param name="indentationlevel">The indentationlevel. 4 blanks at the beginning of each line for each level.</param>
+    /// <returns>
+    /// A <see cref="System.String"/> that represents this instance.
+    /// </returns>
+    public string ToString(int indentationlevel)
+    {
+        string indent = "".PadRight(4 * indentationlevel, ' ');
+
+        string sb = string.Format(indent + "(RDSTable){0} Entries:{1},Prob:{2},UAE:{3}{4}{5}{6}", 
+            this.GetType().Name, mContents.Count, rdsWeight,
+            (rdsUnique ? "1" : "0"), (rdsAlways ? "1" : "0"), (rdsEnabled ? "1" : "0"), (mContents.Count > 0 ? "\r\n" : ""));
+
+        foreach (IRDSObject o in mContents)
+        {
+            sb += ("\r\n"+(indent + o.ToString(indentationlevel + 1)));
+        }
+        return sb.ToString();
+    }
     #endregion
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
