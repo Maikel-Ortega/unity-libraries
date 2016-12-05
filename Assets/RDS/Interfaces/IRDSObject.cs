@@ -21,7 +21,7 @@ public interface IRDSObject
     event Action<IRDSObject> OnRdsPostResultEvaluation;
 
     double rdsWeight    { get; set; }   //Chance for the item to drop
-    bool rdsUnique      { get; set; }    //Only drops once for each throw
+    bool rdsUnique      { get; set; }    //Only drops once for each throw 
     bool rdsAlways      { get; set; }    //Drop always
     bool rdsEnabled     { get; set; }    //If not enabled, won't drop
     /// <summary>

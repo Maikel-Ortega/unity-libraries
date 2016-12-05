@@ -216,7 +216,7 @@ public class RDSTable : IRDSTable
     /// Gets the rds result.
     /// </summary>
     /// <value>The rds result.</value>
-    public virtual System.Collections.Generic.IEnumerable<IRDSObject> GetRdsResult()
+    public virtual IEnumerable<IRDSObject> GetRdsResult()
     {
         
         List<IRDSObject> r = new List<IRDSObject>();
