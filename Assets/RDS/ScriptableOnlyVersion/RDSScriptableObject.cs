@@ -2,7 +2,7 @@
 using System.Collections;
 
 [CreateAssetMenu()]
-public class RDSScriptableObjectNew : ScriptableObject 
+public class RDSScriptableObject : ScriptableObject 
 {
     public string id;
 }

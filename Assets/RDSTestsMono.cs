@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class RDSTestsMono : MonoBehaviour 
 {
-    public RDSScriptableTableNew tableToTest;
+    public RDSScriptableTable tableToTest;
 	
 	void Update () 
     {

@@ -10,7 +10,7 @@ public class RDSScriptableProperty
     public bool rdsUnique;
     public bool rdsAlways;
     public bool rdsEnabled;
-    public RDSScriptableObjectNew rdsObject;
+    public RDSScriptableObject rdsObject;
     public event System.Action<RDSScriptableProperty> OnRdsPreResultEvaluation;
     public event System.Action<RDSScriptableProperty> OnRdsHit;
     public event System.Action<RDSScriptableProperty> OnRdsPostResultEvaluation;
@@ -22,7 +22,7 @@ public class RDSScriptableProperty
 }
 
 [CreateAssetMenu()]
-public class RDSScriptableTableNew : RDSScriptableObjectNew 
+public class RDSScriptableTable : RDSScriptableObject 
 {
    
 
@@ -48,9 +48,9 @@ public class RDSScriptableTableNew : RDSScriptableObjectNew
 
             if(!(newObj is RDSNull))
             {
-                if( newObj.rdsObject is RDSScriptableTableNew)
+                if( newObj.rdsObject is RDSScriptableTable)
                 {
-                    resultList.AddRange( ((RDSScriptableTableNew)newObj.rdsObject).GetRdsResult() );
+                    resultList.AddRange( ((RDSScriptableTable)newObj.rdsObject).GetRdsResult() );
                 }
                 else
                 {
